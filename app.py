@@ -64,9 +64,10 @@ class BlogGenerator:
             - Reflective of current trends (mention if relevant)
             
             Format your response as a numbered list with no additional commentary.
-            
+            Do not add the response line of here are five titles.
+
             Example format:
-            1. Title One [Trending in 2023]
+            1. Title One [Trending in 2025]
             2. Title Two
             3. Title Three
             """
@@ -85,7 +86,9 @@ class BlogGenerator:
             template="""
             Suggest 10-15 relevant keywords and important concepts that should be included 
             in a blog post titled: {title}
-            
+
+            Do not add any additional commentary like Here is the list of keywords and concepts:
+
             Include:
             - Current year ({current_year}) where relevant
             - Trending terms related to the topic
@@ -307,7 +310,6 @@ def main():
         st.markdown("### Features")
         st.markdown("- Up-to-date Research Assistant")
         st.markdown("- Current Title Generator")
-        st.markdown("- SEO Keyword Suggestions")
         st.markdown("- Full Blog Generation")
         st.markdown("- Interactive Q&A Section")
         st.markdown("- Content Chatbot Assistant")
@@ -334,7 +336,7 @@ def main():
         st.session_state.chat_history = []
     
     st.title("AI Blog Generator Pro ✍️")
-    st.write("Generate SEO-optimized blog posts with current research and Q&A capabilities")
+    st.write("Generate blog posts with current research and Q&A capabilities")
     
     # Main content tabs
     tab1, tab2, tab3, tab4 = st.tabs(["Research", "Content Creation", "Final Output", "Chat Assistant"])
@@ -342,8 +344,7 @@ def main():
     with tab1:
         st.header("Research Phase")
         topic = st.text_input("Enter your blog topic:", 
-                            placeholder="e.g., sustainable gardening techniques in 2024",
-                            key="research_topic")
+                            placeholder="e.g., EV industry")
         
         if topic:
             # Clear previous research if topic changes
