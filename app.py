@@ -197,92 +197,40 @@ class BlogGenerator:
         memory = ConversationBufferMemory()
         return memory
     
-    def chat_with_blog(self, memory, user_input, blog_content=None):
-        """Chat with the AI about the blog content"""
+    def chat_with_blog(self, memory, user_input):
+        """General purpose chat with the AI assistant"""
         current_date = datetime.now().strftime("%Y-%m-%d")
+
+        # General conversation without blog content reference
+        prompt = PromptTemplate(
+            input_variables=["current_date", "human_input"],
+            template="""
+            **Current Date**: {current_date}
+            
+            **User Message**: {human_input}
+
+            You are a helpful AI assistant. Provide general information and answer questions.
+            For current topics, always mention the date when providing facts or statistics.
+
+            **Response**:
+            """
+        )
+
+        chain = LLMChain(
+            llm=self.llm,
+            prompt=prompt,
+            verbose=True
+        )
+
+        try:
+            response = chain.run(
+                current_date=current_date,
+                human_input=user_input
+            )
+            return response
+        except Exception as e:
+            return f"Error generating response: {str(e)}"
         
-        if blog_content:
-            # Create a memory-aware chain specifically for blog content
-            prompt = PromptTemplate(
-                input_variables=["current_date", "blog_content", "history", "user_input"],
-                template="""
-                **Current Date**: {current_date}
-                
-                **Blog Content Reference**:
-                {blog_content}
-                
-                **Conversation History**:
-                {history}
-                
-                **User Question**: {user_input}
-                
-                **Instructions**:
-                - Answer specifically about the referenced blog content
-                - Include dates for any facts/statistics
-                - Flag potentially outdated information
-                - Format sources as [Source](URL)
-                - Keep responses professional but conversational
-                
-                **Response**:
-                """
-            )
-
-            chain = LLMChain(
-                llm=self.llm,
-                prompt=prompt,
-                memory=memory,
-                verbose=True
-            )
-            
-            # Prepare all inputs in a single dictionary
-            inputs = {
-                "current_date": current_date,
-                "blog_content": blog_content[:8000],  # Truncate to prevent overflow
-                "history": memory.buffer,
-                "user_input": user_input
-            }
-            
-            try:
-                response = chain(inputs, return_only_outputs=True)
-                return response['text']
-            except Exception as e:
-                return f"Error generating response: {str(e)}"
-                
-        else:
-            # General conversation without blog content
-            prompt = PromptTemplate(
-                input_variables=["current_date", "history", "input"],
-                template="""
-                **Current Date**: {current_date}
-                
-                **Conversation History**:
-                {history}
-                
-                **User Message**: {input}
-                
-                **Response**:
-                """
-            )
-
-            chain = LLMChain(
-                llm=self.llm,
-                prompt=prompt,
-                memory=memory,
-                verbose=True
-            )
-            
-            inputs = {
-                "current_date": current_date,
-                "history": memory.buffer,
-                "input": user_input
-            }
-            
-            try:
-                response = chain(inputs, return_only_outputs=True)
-                return response['text']
-            except Exception as e:
-                return f"Error generating response: {str(e)}"
-
 def main():
     st.set_page_config(
         page_title="AI Blog Generator Pro",
@@ -521,119 +469,41 @@ def main():
     with tab4:
         st.header("Chat Assistant")
         st.write("Get current information and help with your blog content from our AI assistant")
-        
+
         # Initialize chat if not already done
         if 'chat_memory' not in st.session_state:
             st.session_state.chat_memory = generator.initialize_chatbot()
+
+        # Initialize chat history if not exists
+        if 'chat_history' not in st.session_state:
             st.session_state.chat_history = []
-        
+
         # Display chat history
         for message in st.session_state.chat_history:
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
-        
+
         # Chat input
-        if prompt := st.chat_input("Ask me anything about your blog..."):
+        if prompt := st.chat_input("Ask me anything..."):
             # Add user message to chat history
             st.session_state.chat_history.append({"role": "user", "content": prompt})
-            
+
             # Display user message
             with st.chat_message("user"):
                 st.markdown(prompt)
-            
-            # Get blog context if available
-            blog_context = None
-            if st.session_state.get('generated_blog'):
-                blog_context = st.session_state.generated_blog
-            
-            # Generate AI response
+
+            # Generate AI response (without blog context)
             with st.spinner("Thinking..."):
                 try:
                     response = generator.chat_with_blog(
                         st.session_state.chat_memory,
-                        prompt,
-                        blog_context
+                        prompt
                     )
-                    
-                    # Add AI response to chat history
                     st.session_state.chat_history.append({"role": "assistant", "content": response})
-                    
-                    # Display AI response
-                    with st.chat_message("assistant"):
-                        st.markdown(response)
+                    st.rerun()
                 except Exception as e:
                     st.error(f"An error occurred during chat: {str(e)}")
-                            
-        # Add some suggested prompts
-        st.markdown("---")
-        st.subheader("Try asking:")
         
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("What's current in this field?"):
-                if st.session_state.get('generated_blog'):
-                    with st.spinner("Checking for current trends..."):
-                        try:
-                            response = generator.chat_with_blog(
-                                st.session_state.chat_memory,
-                                "What are the most current trends or developments related to this blog topic? Please include dates for any information.",
-                                st.session_state.generated_blog
-                            )
-                            st.session_state.chat_history.append({"role": "assistant", "content": response})
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"An error occurred: {str(e)}")
-                else:
-                    st.warning("Please generate a blog post first")
-            
-            if st.button("Update statistics"):
-                if st.session_state.get('generated_blog'):
-                    with st.spinner("Finding current statistics..."):
-                        try:
-                            response = generator.chat_with_blog(
-                                st.session_state.chat_memory,
-                                "Can you provide the most current statistics relevant to this blog post? Include source dates.",
-                                st.session_state.generated_blog
-                            )
-                            st.session_state.chat_history.append({"role": "assistant", "content": response})
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"An error occurred: {str(e)}")
-                else:
-                    st.warning("Please generate a blog post first")
-        
-        with col2:
-            if st.button("Check for outdated info"):
-                if st.session_state.get('generated_blog'):
-                    with st.spinner("Analyzing content timeliness..."):
-                        try:
-                            response = generator.chat_with_blog(
-                                st.session_state.chat_memory,
-                                "Review this blog content and identify any information that might be outdated. For each item, suggest how to update it.",
-                                st.session_state.generated_blog
-                            )
-                            st.session_state.chat_history.append({"role": "assistant", "content": response})
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"An error occurred: {str(e)}")
-                else:
-                    st.warning("Please generate a blog post first")
-            
-            if st.button("Recent case studies"):
-                if st.session_state.get('generated_blog'):
-                    with st.spinner("Finding recent examples..."):
-                        try:
-                            response = generator.chat_with_blog(
-                                st.session_state.chat_memory,
-                                "Can you suggest recent (last 6 months) case studies or examples relevant to this blog topic?",
-                                st.session_state.generated_blog
-                            )
-                            st.session_state.chat_history.append({"role": "assistant", "content": response})
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"An error occurred: {str(e)}")
-                else:
-                    st.warning("Please generate a blog post first")
 
 if __name__ == "__main__":
     main()
