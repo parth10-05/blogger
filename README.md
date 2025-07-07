@@ -11,7 +11,7 @@ A powerful Streamlit-based application that helps you **research, generate, and 
 - 🧠 **Keyword Generator**: Suggests high-performing keywords including long-tail terms.
 - ✒️ **Full Blog Writer**: Generates well-structured, markdown-formatted blog content.
 - ❓ **Q&A Builder**: Creates a reader-focused FAQ section from your content.
-- 🤖 **AI Chat Assistant**: Lets you ask questions, get updates, and explore your blog interactively.
+- 🤖 **AI Chat Assistant**: Lets you ask questions and get updates.
 - 💾 **Markdown Downloads**: Save both research and final output as `.md` files.
 
 ---
