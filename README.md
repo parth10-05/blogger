@@ -1,6 +1,6 @@
 # ✍️ AI Blog Generator Pro
 
-A powerful Streamlit-based application that helps you **research, generate, and refine** up-to-date SEO-optimized blog posts using the latest **Groq LLMs (LLaMA 3 / Gemma)** via the `langchain` framework.
+A powerful Streamlit-based application that helps you **research, generate, and refine** up-to-date blog posts using the latest **Groq LLMs (LLaMA 3 / Gemma)** via the `langchain` framework.
 
 🔗 **Live Demo**: [https://blogger-ai.streamlit.app/](https://blogger-ai.streamlit.app/)
 ---
