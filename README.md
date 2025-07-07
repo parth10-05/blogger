@@ -7,7 +7,7 @@ A powerful Streamlit-based application that helps you **research, generate, and 
 ## 🚀 Features
 
 - ✅ **Current Research Assistant**: Gathers real-time insights, facts, and stats (with sources).
-- 📝 **Dynamic Title Generator**: Creates trending and SEO-friendly blog titles.
+- 📝 **Dynamic Title Generator**: Creates trending blog titles.
 - 🧠 **Keyword Generator**: Suggests high-performing keywords including long-tail terms.
 - ✒️ **Full Blog Writer**: Generates well-structured, markdown-formatted blog content.
 - ❓ **Q&A Builder**: Creates a reader-focused FAQ section from your content.
