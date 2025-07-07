@@ -9,7 +9,7 @@ import random
 
 class BlogGenerator:
     def __init__(self, groq_api_key, model_name="llama3-70b-8192"):
-        # Initialize Groq LLM with valid model names
+        
         self.llm = ChatGroq(
             temperature=0.7,
             model_name=model_name,
@@ -201,7 +201,6 @@ class BlogGenerator:
         """General purpose chat with the AI assistant"""
         current_date = datetime.now().strftime("%Y-%m-%d")
 
-        # General conversation without blog content reference
         prompt = PromptTemplate(
             input_variables=["current_date", "human_input"],
             template="""
@@ -239,7 +238,6 @@ def main():
         initial_sidebar_state="expanded"
     )
     
-    # Sidebar for API key and settings
     with st.sidebar:
         st.title("Settings")
         groq_api_key = st.text_input("Enter your Groq API Key:", type="password")
@@ -398,8 +396,8 @@ def main():
             # Word limit input
             word_limit = st.slider(
                 "Select word limit:",
-                min_value=300,
-                max_value=2000,
+                min_value=200,
+                max_value=1000,
                 value=800,
                 step=100,
                 key="word_limit"
